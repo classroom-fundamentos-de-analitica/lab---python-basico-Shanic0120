@@ -11,7 +11,24 @@ Utilice el archivo `data.csv` para resolver las preguntas.
 
 
 """
+def c():
+    l=[]
+    for i in open('data.csv'):
+        ls=i.split()
+        ds={}
+        for i in ls[4].split(','):
+            i=i.split(':')
+            ds[i[0]]=int(i[1])
 
+        d={
+            'id':ls[0],
+            'cuenta':int(ls[1]),
+            'fecha':ls[2],
+            'letras':ls[3].split(','),
+            'claves':ds
+        }
+        l.append(d)
+    return l
 
 def pregunta_01():
     """
@@ -21,8 +38,7 @@ def pregunta_01():
     214
 
     """
-    return
-
+    return sum(map(lambda x:x['cuenta'],c()))
 
 def pregunta_02():
     """
@@ -39,7 +55,15 @@ def pregunta_02():
     ]
 
     """
-    return
+    d={}
+    for i in list(map(lambda x:x['id'],c())):
+        try:
+            d[i]+=1
+        except:
+            d[i]=1
+    
+    
+    return list(sorted(d.items()))
 
 
 def pregunta_03():
@@ -57,8 +81,14 @@ def pregunta_03():
     ]
 
     """
-    return
+    d={}
+    for i,j in list(map(lambda x:(x['id'],x['cuenta']),c())):
+        try:
+            d[i]+=j
+        except:
+            d[i]=j
 
+    return list(sorted(d.items()))
 
 def pregunta_04():
     """
@@ -82,7 +112,13 @@ def pregunta_04():
     ]
 
     """
-    return
+    d={}
+    for i in list(map(lambda x:x['fecha'][5:7],c())):
+        try:
+            d[i]+=1
+        except:
+            d[i]=1
+    return list(sorted(d.items()))
 
 
 def pregunta_05():
@@ -100,7 +136,25 @@ def pregunta_05():
     ]
 
     """
-    return
+    l=[
+        ["A", 0, 9],
+        ["B", 0, 9],
+        ["C", 0, 9],
+        ["D", 0, 9],
+        ["E", 0, 9],
+    ]
+    for i in c():
+        for j in l:
+            if j[0]==i['id']:
+                if j[1]<i['cuenta']:
+                    j[1]=i['cuenta']
+                if j[2]>i['cuenta']:
+                    j[2]=i['cuenta']
+
+    for i in range(len(l)):
+        l[i]=tuple(l[i])
+
+    return l
 
 
 def pregunta_06():
@@ -125,7 +179,24 @@ def pregunta_06():
     ]
 
     """
-    return
+    d={}
+    for i in c():
+        
+        for j in i['claves']:
+            try:
+                if d[j]['max']<i['claves'][j]:
+                    d[j]['max']=i['claves'][j]
+                if d[j]['min']>i['claves'][j]:
+                    d[j]['min']=i['claves'][j]
+            except:
+                d[j]={'min':i['claves'][j] ,'max':i['claves'][j]}
+    
+    l=[]
+
+    for i in d:
+        l.append((i,d[i]['min'],d[i]['max']))
+        
+    return sorted(l)
 
 
 def pregunta_07():
@@ -149,8 +220,18 @@ def pregunta_07():
     ]
 
     """
-    return
+    d={}
 
+    for i in c():
+        try:
+            d[i['cuenta']].append(i['id'])
+        except:
+            d[i['cuenta']]=[i['id']]
+    l=[]
+    for i in d:
+        l.append((i,d[i]))
+    return sorted(l)
+    
 
 def pregunta_08():
     """
@@ -174,7 +255,18 @@ def pregunta_08():
     ]
 
     """
-    return
+    d={}
+
+    for i in c():
+        try:
+            if i['id'] not in d[i['cuenta']]:
+                d[i['cuenta']].append(i['id'])
+        except:
+            d[i['cuenta']]=[i['id']]
+    l=[]
+    for i in d:
+        l.append((i,sorted(d[i])))
+    return sorted(l)
 
 
 def pregunta_09():
@@ -197,8 +289,16 @@ def pregunta_09():
     }
 
     """
-    return
-
+    d={}
+    for i in c():
+        
+        for j in i['claves']:
+            try:
+                d[j]+=1
+            except:
+                d[j]=1
+        
+    return dict(sorted(d.items()))
 
 def pregunta_10():
     """
@@ -218,8 +318,11 @@ def pregunta_10():
 
 
     """
-    return
+    l=[]
+    for i in c():
+        l.append((i['id'],len(i['letras']),len(i['claves'])))
 
+    return l
 
 def pregunta_11():
     """
@@ -239,8 +342,14 @@ def pregunta_11():
 
 
     """
-    return
-
+    d={}
+    for i in c():
+        for j in i['letras']:
+            try:
+                d[j]+=i['cuenta']
+            except:
+                d[j]=i['cuenta']
+    return dict(sorted(d.items()))
 
 def pregunta_12():
     """
@@ -256,5 +365,13 @@ def pregunta_12():
         'E': 324
     }
 
-    """
-    return
+    """ 
+    d={}
+    for i in c():
+        for j in i['claves']:
+            try:
+                d[i['id']]+=i['claves'][j]
+            except:
+                d[i['id']]=i['claves'][j]
+
+    return dict(sorted(d.items()))
